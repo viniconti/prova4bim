@@ -1,0 +1,205 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+int bateria = 100;
+int creditos = 10;
+char mensagens[10][100];
+int totalMensagens = 0;
+char nomesContatos[10][50];
+char telefonesContatos[10][20];
+int totalContatos = 0;
+char chamadas[10][100];
+int totalChamadas = 0;
+char operadora[50] = "Tim";
+
+void menu();
+void bateriaAtual();
+void mensagensCaixa();
+void contatosAgenda();
+void historicoChamadas();
+void ligar();
+void mostrarCreditos();
+void operadoraInfo();
+void gastarBateria();
+
+void menu() {
+    printf("\n=== Menu do Celular ===\n");
+    printf("1. Ver Bateria\n");
+    printf("2. Caixa de Mensagens\n");
+    printf("3. Histórico de Chamadas\n");
+    printf("4. Realizar Chamada\n");
+    printf("5. Agenda de Contatos\n");
+    printf("6. Créditos\n");
+    printf("7. Operadora\n");
+    printf("0. Sair\n");
+    printf("=======================\n");
+}
+
+void bateriaAtual() {
+    printf("\nBateria: %d%%\n", bateria);
+    printf("Tempo estimado: %d minutos\n", bateria * 5);
+}
+
+void mensagensCaixa() {
+    int opcao = -1;
+    while (opcao != 0) {
+        printf("\n=== Mensagens ===\n");
+        if (totalMensagens == 0) {
+            printf("Nenhuma mensagem recebida.\n");
+        } else {
+            for (int i = 0; i < totalMensagens; i++) {
+                printf("[%d] %s\n", i + 1, mensagens[i]);
+            }
+        }
+        printf("\n1. Enviar nova mensagem\n");
+        printf("0. Voltar\n");
+        printf("Escolha: ");
+        scanf("%d", &opcao);
+
+        if (opcao == 1) {
+            if (totalMensagens < 10) {
+                if (creditos > 0) {
+                    printf("Digite sua mensagem: ");
+                    scanf(" %[^\n]s", mensagens[totalMensagens]);
+                    totalMensagens++;
+                    creditos--;
+                    printf("Mensagem enviada! Créditos restantes: %d\n", creditos);
+                } else {
+                    printf("Sem créditos para enviar mensagem!\n");
+                }
+            } else {
+                printf("Limite de mensagens atingido.\n");
+            }
+        } else if (opcao != 0) {
+            printf("Opção inválida.\n");
+        }
+    }
+}
+
+void historicoChamadas() {
+    int opcao = -1;
+    while (opcao != 0) {
+        printf("\n=== Histórico de Chamadas ===\n");
+        if (totalChamadas == 0) {
+            printf("Nenhuma chamada realizada.\n");
+        } else {
+            for (int i = 0; i < totalChamadas; i++) {
+                printf("[%d] %s\n", i + 1, chamadas[i]);
+            }
+        }
+        printf("\n0. Voltar\n");
+        printf("Escolha: ");
+        scanf("%d", &opcao);
+
+        if (opcao != 0) {
+            printf("Opção inválida.\n");
+        }
+    }
+}
+
+void ligar() {
+    if (creditos < 2) {
+        printf("\nSem créditos suficientes para fazer a chamada!\n");
+        return;
+    }
+
+    char numero[20];
+    printf("Digite o número para ligar: ");
+    scanf(" %[^\n]s", numero);
+
+    creditos -= 2;
+    printf("Chamando para %s... (duração de 5 segundos)\n", numero);
+    snprintf(chamadas[totalChamadas], 100, "Chamada para %s - 5s", numero);
+    totalChamadas++;
+}
+
+void contatosAgenda() {
+    int opcao = -1;
+    while (opcao != 0) {
+        printf("\n=== Agenda de Contatos ===\n");
+        if (totalContatos == 0) {
+            printf("Sem contatos salvos.\n");
+        } else {
+            for (int i = 0; i < totalContatos; i++) {
+                printf("[%d] Nome: %s | Tel: %s\n", i + 1, nomesContatos[i], telefonesContatos[i]);
+            }
+        }
+        printf("\n1. Adicionar novo contato\n");
+        printf("0. Voltar\n");
+        printf("Escolha: ");
+        scanf("%d", &opcao);
+
+        if (opcao == 1) {
+            if (totalContatos < 10) {
+                printf("Digite o nome: ");
+                scanf(" %[^\n]s", nomesContatos[totalContatos]);
+                printf("Digite o telefone: ");
+                scanf(" %[^\n]s", telefonesContatos[totalContatos]);
+                totalContatos++;
+                printf("Contato salvo!\n");
+            } else {
+                printf("Agenda cheia!\n");
+            }
+        } else if (opcao != 0) {
+            printf("Opção inválida.\n");
+        }
+    }
+}
+
+void mostrarCreditos() {
+    printf("\nCréditos: %d\n", creditos);
+    printf("Você pode fazer %d chamadas ou enviar %d mensagens.\n", creditos / 2, creditos);
+}
+
+void operadoraInfo() {
+    printf("\nOperadora: %s\n", operadora);
+}
+
+void gastarBateria() {
+    static int tempo = 0;
+    tempo++;
+
+    if (tempo % 5 == 0) {
+        bateria--;
+        if (bateria < 0) {
+            bateria = 0;
+        }
+        printf("Bateria descarregando... Nível atual: %d%%\n", bateria);
+    }
+}
+
+int main() {
+    int opcao = -1;
+
+    while (opcao != 0) {
+        menu();
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+
+        if (opcao == 1) {
+            bateriaAtual();
+        } else if (opcao == 2) {
+            mensagensCaixa();
+        } else if (opcao == 3) {
+            historicoChamadas();
+        } else if (opcao == 4) {
+            ligar();
+        } else if (opcao == 5) {
+            contatosAgenda();
+        } else if (opcao == 6) {
+            mostrarCreditos();
+        } else if (opcao == 7) {
+            operadoraInfo();
+        } else if (opcao == 0) {
+            printf("Saindo...\n");
+        } else {
+            printf("Opção inválida!\n");
+        }
+
+        gastarBateria();
+        sleep(1);  // Espera 1 segundo
+    }
+
+    return 0;
+}
